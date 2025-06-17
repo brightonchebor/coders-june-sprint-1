@@ -1,16 +1,10 @@
 from rest_framework import serializers
-from . models import CommuityMembers, Staff
+from . models import CommunityMembers, Staff, User, Users
 
 class CommunityMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommunityMembers
         fields = '__all__'
-
-class StaffSerializer(serializers.ModelSerializer):
-    model = Staff
-    fields = '__all__'from rest_framework import serializers
-from django.contrib.auth.models import User
-from .models import Users, Staff
 
 
 #Built-in Django User serializer (for authentication and registration)

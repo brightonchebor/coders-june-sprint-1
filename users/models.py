@@ -38,6 +38,13 @@ class CommunityMembers(models.Model):
     def __str__(self):
         return f"{self.name} ({self.reason})"
 
+class User(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.username
     
 class Staff(models.Model):
     username = models.CharField(max_length=150, unique=True)
