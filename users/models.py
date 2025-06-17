@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import user
+from django.utils import timezone
 
 
-class User(models.Model):
+class CommunityMembers(models.Model):
 
     ROLE_CHOICES = (
         ('member', 'Member'),
@@ -12,6 +12,7 @@ class User(models.Model):
     )
 
     DEPARTMENT_CHOICES = (
+>>>>>>> 71982b236429a7e22470a85521c2274a8bc7bcd3
         ('communication', 'Communication'),
         ('creatives', 'Creatives'),
         ('tech', 'Tech Department'),
@@ -21,29 +22,19 @@ class User(models.Model):
         ('admin', 'Admin'),
         ('finance', 'Finance'),
         ('entrepreneurship', 'Entrepreneurship'),
-    )
-
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=15, unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    ]
+ #fill your details here
+    name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=15)
+    email = models.EmailField() 
+    reason = models.CharField(max_length=20, choices=REASON_CHOICES)
     department = models.CharField(max_length=30, choices=DEPARTMENT_CHOICES)
+    sign_in_time = models.DateTimeField(default=timezone.now)
+    check_out_time = models.DateTimeField(null=True, blank=True)
 
-
-
-    def __str__(self):
-        return self.phone_number
-
- 
-
-class Staff(models.Model):
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(unique=True)
-    department = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    position = models.CharField(max_length=50)
+    def check_out(self):
+        self.check_out_time = timezone.now()
+        self.save()
 
     def __str__(self):
-        return self.username
-
-    
+        return f"{self.name} ({self.reason})"
