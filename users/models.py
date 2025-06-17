@@ -46,8 +46,8 @@ class Staff(models.Model):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     position = models.CharField(max_length=50)
 
-def __str__(self):
-    return f"{self.name}"
- 
+    def __str__(self):
+        return f"{self.name} ({self.wh})"
 
     
+
