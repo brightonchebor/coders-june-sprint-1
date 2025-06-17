@@ -1,3 +1,36 @@
 from django.db import models
+from django.contrib.auth.models import user
 
-# Create your models here.
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    ROLE_CHOICES = [
+        ('member', 'Member'),
+        ('visitor', 'Visitor'),
+        ('attachee', 'Attachee'),
+        ('not_sure', 'Not Sure'),
+    ]
+
+    DEPARTMENT_CHOICES = [
+        ('communication', 'Communication'),
+        ('creatives', 'Creatives'),
+        ('tech', 'Tech Department'),
+        ('community_experience', 'Community Experience'),
+        ('youth_engagement', 'Youth Engagement'),
+        ('heritage', 'Heritage'),
+        ('admin', 'Admin'),
+        ('finance', 'Finance'),
+        ('entrepreneurship', 'Entrepreneurship'),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=15, unique=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    department = models.CharField(max_length=30, choices=DEPARTMENT_CHOICES)
+
+   
+   
+    USERNAME_FIELD = 'phone_number'
+    REQUIRED_FIELDS = ['role', 'department']
+
+    def __str__(self):
+        return self.phone_number
+
