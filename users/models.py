@@ -1,13 +1,12 @@
 from django.db import models
 
-# Create your models here.
-is_staff = models.BooleanField(default=False)  # If true, this person is a Staff
-user = User.objects.create_user(email='staff@example.com', password='12345')
-user.is_staff = True
-user.role = 'staff'
-user.save()
-from django.contrib.auth.decorators import user_passes_test
+class Staff(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    department = models.CharField(max_length=50)
+    location = models.CharField(max_length=255)
+    phone = models.CharField(max_length=10, blank=True)
+    position = models.CharField(max_length=50)
 
-@user_passes_test(lambda u: u.is_staff)
-def view_for_staff_only(request):
-    return HttpResponse("Staff content.")
+    def __str__(self):
+        return self.username
