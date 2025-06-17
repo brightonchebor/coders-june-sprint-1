@@ -2,15 +2,16 @@ from django.db import models
 from django.contrib.auth.models import user
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
-    ROLE_CHOICES = [
+class User(models.Model):
+
+    ROLE_CHOICES = (
         ('member', 'Member'),
         ('visitor', 'Visitor'),
         ('attachee', 'Attachee'),
         ('not_sure', 'Not Sure'),
-    ]
+    )
 
-    DEPARTMENT_CHOICES = [
+    DEPARTMENT_CHOICES = (
         ('communication', 'Communication'),
         ('creatives', 'Creatives'),
         ('tech', 'Tech Department'),
@@ -20,7 +21,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('admin', 'Admin'),
         ('finance', 'Finance'),
         ('entrepreneurship', 'Entrepreneurship'),
-    ]
+    )
+
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
