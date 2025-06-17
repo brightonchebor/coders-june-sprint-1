@@ -3,14 +3,14 @@ from django.contrib.auth.models import User
 from .models import Users, Staff
 
 
-# Built-in Django User serializer (for authentication and registration)
+#Built-in Django User serializer (for authentication and registration)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
 
 
-# Serializer for creating/registering a new User along with Users profile
+#Serializer for creating/registering a new User along with Users profile
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     email = serializers.EmailField(source='user.email')
