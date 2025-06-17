@@ -6,5 +6,5 @@ class AttendanceSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Attendance
-        fields = ['id', 'username', 'date', 'check_in', 'check_out']
-        read_only_fields = ['id', 'username', 'date', 'check_in', 'check_out']
+        fields = ['id', 'date', 'check_in', 'check_out']
+        read_only_fields = ['id', 'date', 'check_in', 'check_out']

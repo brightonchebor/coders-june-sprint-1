@@ -63,24 +63,3 @@ class CheckOutView(APIView):
             'data': serializer.data
         }, status=status.HTTP_200_OK)
 
-
-class TodayStatusView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        today = date.today()
-        try:
-            attendance = Attendance.objects.get(user=request.user, date=today)
-            serializer = AttendanceSerializer(attendance)
-            return Response({'data': serializer.data}, status=status.HTTP_200_OK)
-        except Attendance.DoesNotExist:
-            return Response({'message': 'No attendance record for today'}, status=status.HTTP_200_OK)
-
-
-class AttendanceHistoryView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        attendances = Attendance.objects.filter(user=request.user).order_by('-date')
-        serializer = AttendanceSerializer(attendances, many=True)
-        return Response({'data': serializer.data}, status=status.HTTP_200_OK)

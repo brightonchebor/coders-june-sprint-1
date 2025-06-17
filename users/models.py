@@ -32,9 +32,7 @@ class Users(models.Model):
         return f"{self.user.username} - {self.date} - {self.role}"
 
     class Meta:
-        unique_together = ('user', 'date')  # Prevent double sign-ins
-# Create your models here.
-
+        unique_together = ('user', 'date')  
 
 class Staff(models.Model):
     username = models.CharField(max_length=150, unique=True)
