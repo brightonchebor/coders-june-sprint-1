@@ -17,8 +17,7 @@ from .serializers import (
 
 class RegisterAPIView(APIView):
     """
-    Register a new user - returns user data 
-    Client should use login endpoint to authenticate
+    Register a new user and return user data with authentication token
     """
     permission_classes = [AllowAny]
 
