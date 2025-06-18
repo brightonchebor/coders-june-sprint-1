@@ -4,39 +4,184 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
+from django.contrib.auth import login
+from django.db import transaction
+from .models import CustomUser
 from .serializers import (
     RegisterSerializer,
     LoginSerializer,
-    UserSerializer
+    UserSerializer,
+    UserProfileSerializer
 )
 
 
 class RegisterAPIView(APIView):
+    """
+    Register a new user and return user data with authentication token
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        # create token on registration
-        token = Token.objects.create(user=user)
-        data = UserSerializer(user).data
-        data["token"] = token.key
-        return Response(data, status=status.HTTP_201_CREATED)
+        try:
+            serializer = RegisterSerializer(data=request.data)
+            
+            if serializer.is_valid():
+                # Use transaction to ensure atomicity
+                with transaction.atomic():
+                    user = serializer.save()
+                    # Create or get token for the user
+                    token, created = Token.objects.get_or_create(user=user)
+                    
+                    # Return user data with token
+                    user_data = UserSerializer(user).data
+                    return Response({
+                        'message': 'User registered successfully',
+                        'user': user_data,
+                        'token': token.key
+                    }, status=status.HTTP_201_CREATED)
+            
+            return Response({
+                'error': 'Registration failed',
+                'details': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        except Exception as e:
+            return Response({
+                'error': 'Registration failed',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class LoginAPIView(APIView):
+    """
+    Authenticate user and return user data with authentication token
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        try:
+            serializer = LoginSerializer(data=request.data)
+            
+            if serializer.is_valid():
+                user = serializer.validated_data['user']
+                
+                # Get or create token for the user
+                token, created = Token.objects.get_or_create(user=user)
+                
+                # Return user data with token
+                user_data = UserSerializer(user).data
+                return Response({
+                    'message': 'Login successful',
+                    'user': user_data,
+                    'token': token.key
+                }, status=status.HTTP_200_OK)
+            
+            return Response({
+                'error': 'Login failed',
+                'details': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        except Exception as e:
+            return Response({
+                'error': 'Login failed',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class LogoutAPIView(APIView):
+    """
+    Logout user by deleting their authentication token
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # Delete the user's token
+            request.user.auth_token.delete()
+            return Response({
+                'message': 'Logout successful'
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error': 'Logout failed',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserDetailAPIView(APIView):
+    """
+    Get current user's profile information
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            serializer = UserSerializer(request.user)
+            return Response({
+                'user': serializer.data
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error': 'Failed to retrieve user data',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserProfileUpdateAPIView(APIView):
+    """
+    Update current user's profile information
+    """
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        try:
+            serializer = UserProfileSerializer(
+                request.user, 
+                data=request.data, 
+                partial=True
+            )
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'message': 'Profile updated successfully',
+                    'user': UserSerializer(request.user).data
+                }, status=status.HTTP_200_OK)
+            
+            return Response({
+                'error': 'Profile update failed',
+                'details': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        except Exception as e:
+            return Response({
+                'error': 'Profile update failed',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserListAPIView(APIView):
+    """
+    Get list of all users (staff only)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Only staff users can view all users
+        if not request.user.user_type == 'staff':
+            return Response({
+                'error': 'Permission denied. Staff access required.'
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            users = CustomUser.objects.all().order_by('-date_joined')
+            serializer = UserSerializer(users, many=True)
+            return Response({
+                'users': serializer.data,
+                'count': users.count()
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error': 'Failed to retrieve users',
+                'details': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
