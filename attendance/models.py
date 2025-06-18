@@ -8,6 +8,23 @@ class Attendance(models.Model):
         ('checked_in', 'Checked In'),
         ('checked_out', 'Checked Out'),
     )
+    ROLE_CHOICES = (
+        ('attachee', 'Attachee'),
+        ('visitor', 'Visitor'),
+        ('member', 'Member'),
+        ('staff', 'Staff'),
+        ('not sure', 'Not Sure')
+    )
+    DEPARTMENT_CHOICES = (
+        ('communication', 'Communication'),
+        ('creatives', 'Creatives'),
+        ('tech department', 'Tech Department'),
+        ('youth engagement', 'Youth Engagement'),
+        ('heritage', 'Heritage'),
+        ('admin', 'Admin'),
+        ('finance', 'Finance'),
+        ('entrepreneurship', 'Entrepreneurship')
+    )
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
