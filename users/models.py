@@ -16,7 +16,7 @@ class CommunityMembers(models.Model):
         ('creatives', 'Creatives'),
         ('tech', 'Tech Department'),
         ('admin', 'Admin'),
-        ('finance', 'Finance'),ent'),
+        ('finance', 'Finance'),
         ('community_experience', 'Community Experience'),
         ('youth_engagement', 'Youth Engagement'),
         ('heritage', 'Heritage'),
@@ -24,7 +24,7 @@ class CommunityMembers(models.Model):
     
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=15)
+    phone_number = models.CharField(m   ax_length=15)
     email = models.EmailField() 
     reason = models.CharField(max_length=20, choices=ROLE_CHOICES)
     department = models.CharField(max_length=30, choices=DEPARTMENT_CHOICES)
