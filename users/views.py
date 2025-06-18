@@ -17,7 +17,8 @@ from .serializers import (
 
 class RegisterAPIView(APIView):
     """
-    Register a new user and return user data with authentication token
+    Register a new user - returns user data 
+    Client should use login endpoint to authenticate
     """
     permission_classes = [AllowAny]
 
@@ -26,18 +27,14 @@ class RegisterAPIView(APIView):
             serializer = RegisterSerializer(data=request.data)
             
             if serializer.is_valid():
-                # Use transaction to ensure atomicity
                 with transaction.atomic():
                     user = serializer.save()
-                    # Create or get token for the user
-                    token, created = Token.objects.get_or_create(user=user)
                     
-                    # Return user data with token
+                    # Return user data without token
                     user_data = UserSerializer(user).data
                     return Response({
-                        'message': 'User registered successfully',
-                        'user': user_data,
-                        'token': token.key
+                        'message': 'User registered successfully. Please login to continue.',
+                        'user': user_data
                     }, status=status.HTTP_201_CREATED)
             
             return Response({
