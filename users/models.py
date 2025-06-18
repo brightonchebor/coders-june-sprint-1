@@ -16,8 +16,8 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_user_type_display()})"
+        
     def save(self, *args, **kwargs):
-        # ensure staff‐type users are flagged as Django staff
         if self.user_type == "staff":
             self.is_staff = True
         super().save(*args, **kwargs)
