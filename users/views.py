@@ -30,7 +30,6 @@ class RegisterAPIView(APIView):
                 with transaction.atomic():
                     user = serializer.save()
                     
-                    # Return user data without token
                     user_data = UserSerializer(user).data
                     return Response({
                         'message': 'User registered successfully. Please login to continue.',
