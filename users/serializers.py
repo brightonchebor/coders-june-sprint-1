@@ -2,7 +2,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
 
 
@@ -71,7 +71,12 @@ class LoginSerializer(serializers.Serializer):
             if not user.is_active:
                 raise serializers.ValidationError("User account is disabled.")
             
+            # Create JWT tokens
+            refresh = RefreshToken.for_user(user)
+            
             attrs['user'] = user
+            attrs['refresh'] = str(refresh)
+            attrs['access'] = str(refresh.access_token)
             return attrs
         else:
             raise serializers.ValidationError("Must include username and password.")
@@ -101,3 +106,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if CustomUser.objects.filter(username=value).exclude(pk=user.pk).exists():
             raise serializers.ValidationError("A user with this username already exists.")
         return value
+
+
+class TokenRefreshSerializer(serializers.Serializer):
+    """Serializer for refreshing JWT tokens"""
+    refresh = serializers.CharField()
+
+    def validate(self, attrs):
+        try:
+            refresh = RefreshToken(attrs['refresh'])
+            attrs['access'] = str(refresh.access_token)
+            return attrs
+        except Exception:
+            raise serializers.ValidationError("Invalid refresh token.")
