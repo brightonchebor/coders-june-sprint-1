@@ -75,7 +75,15 @@ class CheckOutView(APIView):
         attendance.status = 'checked_out'
         attendance.save()
 
+<<<<<<< HEAD
         return Response(
             AttendanceSerializer(attendance).data,
             status=status.HTTP_200_OK
         )
+=======
+        return Response({
+            'message': 'Checked out successfully',
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
+
+>>>>>>> ff7fe69f5ed38df2eba28a1a2a0fa59b351b1ce5
