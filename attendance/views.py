@@ -74,9 +74,12 @@ class CheckOutView(APIView):
         attendance.check_out_time = timezone.now()
         attendance.status = 'checked_out'
         attendance.save()
+        
+        serialized = AttendanceSerializer(attendance)
 
         return Response({
             'message': 'Checked out successfully',
-            'data': serializer.data
+            'data': serialized.data
         }, status=status.HTTP_200_OK)
+
 
