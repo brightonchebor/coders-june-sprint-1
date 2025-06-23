@@ -5,7 +5,7 @@ class CustomUser(AbstractUser):
     is_staff_user = models.BooleanField(default=False)
     is_community_member = models.BooleanField(default=False)
 
-    # ✅ Extra fields
+    # Extra fields
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
     role = models.CharField(max_length=100, blank=True, null=True)
