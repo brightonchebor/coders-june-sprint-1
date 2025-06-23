@@ -2,15 +2,11 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Users, Staff
 
-
-#Built-in Django User serializer (for authentication and registration)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
 
-
-#Serializer for creating/registering a new User along with Users profile
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     email = serializers.EmailField(source='user.email')
@@ -30,8 +26,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         user_profile = Users.objects.create(user=user, **validated_data)
         return user_profile
 
-
-# Users profile serializer (view user profile info)
 class UsersSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
@@ -39,8 +33,6 @@ class UsersSerializer(serializers.ModelSerializer):
         model = Users
         fields = ['user', 'role', 'department', 'phone_number']
 
-
-# Staff model serializer
 class StaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
