@@ -68,7 +68,7 @@ class LoginAPIView(APIView):
                 user_data = UserSerializer(user).data
                 return Response({
                     'message': 'Login successful',
-                    'user': user_data,
+                    # 'user': user_data,
                     'tokens': {
                         'refresh': refresh_token,
                         'access': access_token,
