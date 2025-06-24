@@ -23,6 +23,7 @@ INSTALLED_APPS = [
 
     'attendance',
     'users',
+    'dashboard',
 
     'rest_framework',
     'rest_framework_simplejwt',
