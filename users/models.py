@@ -7,6 +7,7 @@ class CustomUser(AbstractUser):
         ("staff", "Staff"),
         ("community", "Community"),
     ]
+    
     user_type = models.CharField(
         max_length=10,
         choices=USER_TYPE_CHOICES,
